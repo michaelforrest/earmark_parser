@@ -171,7 +171,7 @@ defmodule EarmarkParser.Parser do
           add_message(options, {:warning, lnb1, "Closing unclosed backquotes #{pending} at end of input"})
       end
 
-    line_text = (for line <- (reversed_para_lines |> Enum.reverse), do: line.line)
+    line_text = _extract_line_part(reversed_para_lines, [])
     if recursive == :list do
         _parse(rest, [ %Block.Text{line: line_text, lnb: lnb} | result ], options1, recursive)
     else
@@ -182,7 +182,6 @@ defmodule EarmarkParser.Parser do
   defp _parse([%Line.SetextUnderlineHeading{line: line, lnb: lnb, level: 2} | rest], result, options, recursive) do
     _parse([%Line.Text{line: line, lnb: lnb} | rest], result, options, recursive)
   end
-
   #########
   # Lists #
   #########
@@ -397,6 +396,12 @@ defmodule EarmarkParser.Parser do
     end
   end
   defp compute_list_spacing( anything_else ), do: anything_else # nop
+
+  defp _extract_line_part(lines, result)
+  defp _extract_line_part([], result), do: result
+  defp _extract_line_part([line|rest], result) do
+    _extract_line_part(rest, [line.line|result])
+  end
 
   defp any_spaced_items?([]), do: false
   defp any_spaced_items?([%{spaced: true}|_]), do: true
