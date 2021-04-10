@@ -181,7 +181,7 @@ defmodule Functional.Scanner.LineTypeTest do
           struct = unquote(Macro.escape type)
           indent = unquote(text) |> String.replace(@all_but_leading_ws, "") |> String.length
           struct = %{ struct | indent: indent, line: unquote(text), lnb: 42 }
-          assert EarmarkParser.LineScanner.type_of({unquote(text), 42}, false) == struct
+          assert EarmarkParser.LineScanner.type_of({unquote(text), 42}, false) == [struct]
         end
       end
     end

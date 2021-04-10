@@ -27,6 +27,8 @@ defmodule EarmarkParser.Options do
             # parallel rendering. Set to &Enum.map/2
             # to keep processing in process and
             # serial
+            flat_mapper: &EarmarkParser.pflat_map/2,
+            flat_mapper_with_timeout: &EarmarkParser.pflat_map/3,
             mapper: &EarmarkParser.pmap/2,
             mapper_with_timeout: &EarmarkParser.pmap/3,
 
@@ -53,6 +55,14 @@ defmodule EarmarkParser.Options do
 
   @doc false
   # Only here we are aware of which mapper function to use!
+  def get_flat_mapper(options) do
+    if options.timeout do
+      &options.flat_mapper_with_timeout.(&1, &2, options.timeout)
+    else
+      options.flat_mapper
+    end
+  end
+
   def get_mapper(options) do
     if options.timeout do
       &options.mapper_with_timeout.(&1, &2, options.timeout)

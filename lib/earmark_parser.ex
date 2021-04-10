@@ -408,8 +408,15 @@ defmodule EarmarkParser do
       do: to_string(version)
   end
 
+  # TODO: Move the mappers into a module
   @default_timeout_in_ms 5000
   @doc false
+  def pflat_map(collection, func, timeout \\ @default_timeout_in_ms) do
+    collection
+    |> Enum.map(fn item -> Task.async(fn -> func.(item) end) end)
+    |> Task.yield_many(timeout)
+    |> Enum.flat_map(&_join_pmap_results_or_raise(&1, timeout))
+  end
   def pmap(collection, func, timeout \\ @default_timeout_in_ms) do
     collection
     |> Enum.map(fn item -> Task.async(fn -> func.(item) end) end)
