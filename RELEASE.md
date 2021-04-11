@@ -1,3 +1,8 @@
+## 1.4.13 2021/??/??
+
+- [33-Join-multiple-IAL-.class-directives-with-spaces](https://github.com/robertdober/earmark_parser/issues/33-Join)
+   Kudos to [myrrlyn](https://github.com/myrrlyn)
+
 ## 1.4.12 2020/11/27
 
 - [29-broken-changelog-link](https://github.com/robertdober/earmark_parser/pull/29)
