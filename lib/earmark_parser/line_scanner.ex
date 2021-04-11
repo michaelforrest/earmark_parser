@@ -134,23 +134,19 @@ defmodule EarmarkParser.LineScanner do
       (match = Regex.run(@void_tag_rgx, line)) && !recursive ->
         [_, tag] = match
 
-        %Line.HtmlOneLine{tag: tag, content: line, indent: 0}
+        %Line.Html{tag: tag, indent: 0}
 
       match = !recursive && Regex.run(~r{\A<([-\w]+?)(?:\s.*)?>.*</\1>}, line) ->
         [_, tag] = match
-        %Line.HtmlOneLine{tag: tag, content: line, indent: 0}
+        %Line.Html{tag: tag, indent: 0}
 
       match = !recursive && Regex.run(~r{\A<([-\w]+?)(?:\s.*)?/>.*}, line) ->
         [_, tag] = match
-        %Line.HtmlOneLine{tag: tag, content: line, indent: 0}
+        %Line.Html{tag: tag, indent: 0}
 
       match = !recursive && Regex.run(~r/^<([-\w]+?)(?:\s.*)?>/, line) ->
         [_, tag] = match
-        %Line.HtmlOpenTag{tag: tag, content: line, indent: 0}
-
-      match = !recursive && Regex.run(~r/\A(\s{0,3})<\/([-\w]+?)>/, line) ->
-        [_, leading_spaces, tag] = match
-        %Line.HtmlCloseTag{tag: tag, indent: String.length(leading_spaces)}
+        %Line.Html{tag: tag, indent: 0}
 
       match = Regex.run(@id_re, line) ->
         [_, leading, id, url | title] = match

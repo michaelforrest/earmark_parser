@@ -223,22 +223,22 @@ defmodule EarmarkParser.Parser do
   ##############
   # HTML block #
   ##############
-  defp _parse([ opener = %Line.HtmlOpenTag{tag: tag, lnb: lnb} | rest], result, options, recursive) do
-    {html_lines, rest1, unclosed} = _html_match_to_closing(opener, rest) 
-    options1 = add_messages(options,
-                            unclosed
-                            |> Enum.map(fn %{lnb: lnb1, tag: tag} -> {:warning, lnb1, "Failed to find closing <#{tag}>"} end))
-    html = Enum.reverse(html_lines)
-    _parse(rest1, [ %Block.Html{tag: tag, html: html, lnb: lnb} | result ], options1, recursive)
-  end
+  # defp _parse([ opener = %Line.HtmlOpenTag{tag: tag, lnb: lnb} | rest], result, options, recursive) do
+  #   {html_lines, rest1, unclosed} = _html_match_to_closing(opener, rest) 
+  #   options1 = add_messages(options,
+  #                           unclosed
+  #                           |> Enum.map(fn %{lnb: lnb1, tag: tag} -> {:warning, lnb1, "Failed to find closing <#{tag}>"} end))
+  #   html = Enum.reverse(html_lines)
+  #   _parse(rest1, [ %Block.Html{tag: tag, html: html, lnb: lnb} | result ], options1, recursive)
+  # end
 
   ####################
   # HTML on one line #
   ####################
 
-  defp _parse([ %Line.HtmlOneLine{line: line, lnb: lnb} | rest], result, options, recursive) do
-    _parse(rest, [ %Block.HtmlOneline{html: [ line ], lnb: lnb} | result ], options, recursive)
-  end
+  # defp _parse([ %Line.HtmlOneLine{line: line, lnb: lnb} | rest], result, options, recursive) do
+  #   _parse(rest, [ %Block.HtmlOneline{html: [ line ], lnb: lnb} | result ], options, recursive)
+  # end
 
   ################
   # HTML Comment #
@@ -497,33 +497,33 @@ defmodule EarmarkParser.Parser do
   # Consume HTML, taking care of nesting. Assumes one tag per line. #
   ###################################################################
 
-  defp _html_match_to_closing(opener, rest), do: _find_closing_tags([opener], rest, [String.trim_leading(opener.line)])
+  # defp _html_match_to_closing(opener, rest), do: _find_closing_tags([opener], rest, [String.trim_leading(opener.line)])
 
-  defp _find_closing_tags(needed, input, html_lines)
-  # No more open tags, happy case
-  defp _find_closing_tags([], rest, html_lines), do: {html_lines, rest, []}
-  # run out of input, unhappy case
-  defp _find_closing_tags(needed, [], html_lines), do: {html_lines, [], needed}
-  # still more lines, still needed closing
-  defp _find_closing_tags(needed = [needed_hd|needed_tl], [rest_hd|rest_tl], html_lines) do
-    cond do
-      _closes_tag?(rest_hd, needed_hd) -> _find_closing_tags(needed_tl, rest_tl, [String.trim_leading(rest_hd.line)|html_lines])
-      _opens_tag?(rest_hd)             -> _find_closing_tags([rest_hd|needed], rest_tl, [String.trim_leading(rest_hd.line)|html_lines])
-      true                             -> _find_closing_tags(needed, rest_tl, [rest_hd.line|html_lines])
-    end
-  end
+  # defp _find_closing_tags(needed, input, html_lines)
+  # # No more open tags, happy case
+  # defp _find_closing_tags([], rest, html_lines), do: {html_lines, rest, []}
+  # # run out of input, unhappy case
+  # defp _find_closing_tags(needed, [], html_lines), do: {html_lines, [], needed}
+  # # still more lines, still needed closing
+  # defp _find_closing_tags(needed = [needed_hd|needed_tl], [rest_hd|rest_tl], html_lines) do
+  #   cond do
+  #     _closes_tag?(rest_hd, needed_hd) -> _find_closing_tags(needed_tl, rest_tl, [String.trim_leading(rest_hd.line)|html_lines])
+  #     _opens_tag?(rest_hd)             -> _find_closing_tags([rest_hd|needed], rest_tl, [String.trim_leading(rest_hd.line)|html_lines])
+  #     true                             -> _find_closing_tags(needed, rest_tl, [rest_hd.line|html_lines])
+  #   end
+  # end
 
   ###########
   # Helpers #
   ###########
 
-  defp _closes_tag?(%Line.HtmlCloseTag{tag: ctag}, %Line.HtmlOpenTag{tag: otag}) do 
-    ctag == otag
-  end
-  defp _closes_tag?(_, _), do: false
+  # defp _closes_tag?(%Line.HtmlCloseTag{tag: ctag}, %Line.HtmlOpenTag{tag: otag}) do 
+  #   ctag == otag
+  # end
+  # defp _closes_tag?(_, _), do: false
 
-  defp _opens_tag?(%Line.HtmlOpenTag{}), do: true
-  defp _opens_tag?(_), do: false
+  # defp _opens_tag?(%Line.HtmlOpenTag{}), do: true
+  # defp _opens_tag?(_), do: false
 
 
   defp _inline_or_text?(line, pending)

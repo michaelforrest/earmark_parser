@@ -31,24 +31,16 @@ defmodule EarmarkParser.Line do
     defstruct(lnb: 0, line: "", indent: -1, delimiter: "~ or `", language: nil, inside_code: false)
   end
 
-  defmodule HtmlOpenTag  do
+  defmodule Html  do
     @moduledoc false
-    defstruct(lnb: 0, line: "", indent: -1, tag: "", content: "", inside_code: false)
+    defstruct(lnb: 0, line: "", indent: -1, tag: "", inside_code: false)
   end
 
-  defmodule HtmlCloseTag  do
-    @moduledoc false
-    defstruct(lnb: 0, line: "", indent: -1, tag: "<... to eol", inside_code: false)
-  end
   defmodule HtmlComment  do
     @moduledoc false
     defstruct(lnb: 0, line: "", indent: -1, complete: true, inside_code: false)
   end
 
-  defmodule HtmlOneLine  do
-    @moduledoc false
-    defstruct(lnb: 0, line: "", indent: -1, tag: "", content: "", inside_code: false)
-  end
 
   defmodule IdDef  do
     @moduledoc false
@@ -102,10 +94,8 @@ defmodule EarmarkParser.Line do
           | %BlockQuote{}
           | %Indent{}
           | %Fence{}
-          | %HtmlOpenTag{}
-          | %HtmlCloseTag{}
+          | %Html{}
           | %HtmlComment{}
-          | %HtmlOneLine{}
           | %IdDef{}
           | %FnDef{}
           | %ListItem{}
