@@ -1,4 +1,4 @@
-defmodule Functional.Scanner.HtmlLineTypeTest do
+defmodule Functional.Scanner.TokenScanner.HtmlTest do
   use ExUnit.Case, async: true
   alias EarmarkParser.Line, as: L
 
@@ -8,12 +8,12 @@ defmodule Functional.Scanner.HtmlLineTypeTest do
     test "<hello>" do
       line = "<hello>"
       type = L.HtmlOpenTag 
-      assert_line_type line, type, tag: "hello"
+      assert_tokens line, type, tag: "hello"
     end
     test "with attributes" do
       line = ~s{<Hello class="World>">}
       type = L.HtmlOpenTag 
-      assert_line_type line, type, tag: "Hello"
+      assert_tokens line, type, tag: "Hello"
     end
   end
 
@@ -21,21 +21,22 @@ defmodule Functional.Scanner.HtmlLineTypeTest do
     test "with attributes" do
       line = ~s{<Hello class="World>"</Hello>>}
       [open, close] = scan(line)
-      assert_line_type open, L.HtmlOpenTag, tag: "Hello"
+      assert_tokens open, L.HtmlOpenTag, tag: "Hello"
     end
   end
 
-  defp assert_line_type(token_or_line, type, overrides \\ [])
-  defp assert_line_type(line, type, overrides) when is_binary(line) do
-    content = Keyword.get(overrides, :content, line)
-    assert scan(line) == [token(type, Keyword.merge(overrides, content: content, line: line))]
+  defp assert_tokens(line, tokens, overrides \\ [])
+  defp assert_tokens(line, tokens, overrides) when is_list(tokens) do
+    result = scan(line, overrides)
+    assert result == tokens
   end
-  defp assert_line_type(token, type, overrides) do
-    content = Keyword.get(overrides, :content, token.line)
-    assert token == [token(type, Keyword.merge(overrides, content: content, line: token.line))]
+  defp assert_tokens(line, token, overrides) do
+    assert_tokens(line, [token], overrides)
   end
 
-  defp scan(line, lnb \\ 42, recursive \\ false), do: EarmarkParser.LineScanner.type_of({line, lnb}, recursive)
+  defp scan(line, _overrides \\ []) do
+    EarmarkParser.LineScanner.TokenScanner.tokens_of_line(line, %EarmarkParser.Options{}, false)
+  end
 
   defp token(scanned, overrides \\ []) do
     lnb = Keyword.get(overrides, :lnb, 42)
@@ -46,5 +47,3 @@ defmodule Functional.Scanner.HtmlLineTypeTest do
   end
 
 end
-
-
