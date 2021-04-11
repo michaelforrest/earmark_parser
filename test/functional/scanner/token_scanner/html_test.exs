@@ -19,9 +19,12 @@ defmodule Functional.Scanner.TokenScanner.HtmlTest do
 
   describe "in one line" do
     test "with attributes" do
-      line = ~s{<Hello class="World>"</Hello>>}
-      [open, close] = scan(line)
-      assert_tokens open, L.HtmlOpenTag, tag: "Hello"
+      line = ~s{<Hello class="World"></Hello>>}
+      expected = [
+        tag(L.HtmlOpenTag, ~s{<Hello class="World">}, tag: "Hello"),
+        tag(L.CloseTag, ~s{</Hello>}, tag: "Hello")
+      ]
+      assert scan(line) == expected
     end
   end
 
@@ -36,6 +39,12 @@ defmodule Functional.Scanner.TokenScanner.HtmlTest do
 
   defp scan(line, _overrides \\ []) do
     EarmarkParser.LineScanner.TokenScanner.tokens_of_line(line, %EarmarkParser.Options{}, false)
+  end
+
+
+  defp tag(token, line, atts) do
+    {:ok, tag} = Keyword.fetch(atts, :tag)
+    struct!(token, line: line, lnb: 0, content: Keyword.get(atts, :content, line), tag: tag)
   end
 
   defp token(scanned, overrides \\ []) do
