@@ -63,6 +63,17 @@ defmodule Acceptance.Ast.FootnotesTest do
       assert as_ast(markdown, footnotes: true) == {:ok, ast, messages}
     end
 
+    test "A footnote in a list" do
+      markdown = """
+      * here is a footnote in a list[^1]
+
+      [^1]: my footnote from the list
+      """
+      ast = [] # beyond my pay grade...
+      messages = []
+      assert as_ast(markdown, footnotes: true, pure_links: true) == {:ok, ast, messages}
+    end
+
     test "A link inside the footnote" do
       markdown = """
       here is my footnote[^1]
